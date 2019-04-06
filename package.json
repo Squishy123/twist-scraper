@@ -1,0 +1,22 @@
+{
+  "name": "twist-scraper",
+  "version": "1.0.0",
+  "description": "Scraper endpoints for twist.moe",
+  "main": "src/main.js",
+  "repository": "https://github.com/Squishy123/twist-scraper.git",
+  "author": "Squishy123 <christian.gnaw@gmail.com>",
+  "license": "AGPL-3.0",
+  "dependencies": {
+    "axios": "^0.18.0",
+    "cheerio": "^1.0.0-rc.3",
+    "puppeteer": "^1.14.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "documentation": "^9.3.1",
+    "mocha": "^6.0.2"
+  },
+  "scripts": {
+    "build-docs": "documentation build src/**/* --format html --output docs/"
+  }
+}
