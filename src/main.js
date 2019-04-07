@@ -14,15 +14,15 @@ module.exports = {
         try {
             let req = await axios.get(`${SEARCH_REQ_PREFIX}`, opts);
             let $ = cheerio.load(req.data);
-            let titles = [];
+            let res = [];
 
             $('a[class=series-title]').each(function (i, elem) {
-                titles.push({
+                res.push({
                     name: $(this).children().first().text().replace(/["\n"]/g, "").trim(),
                     link: `${ROOT_URL}${$(this).attr('href').replace('/first', '')}`
                 });
             });
-            return titles;
+            return res;
         } catch (err) {
             return err;
         }
@@ -33,22 +33,20 @@ module.exports = {
      * @param keyword
      */
     getSearch: async function (keyword, opts) {
+        keyword=keyword.toLowerCase();
         try {
             let req = await axios.get(`${SEARCH_REQ_PREFIX}`, opts);
             let $ = cheerio.load(req.data);
             let res;
 
             $('a[class=series-title]').each(function (i, elem) {
-                //alpha break
-                if ($(this).children().first().text() > keyword)
-                    return false;
-
-                if ($(this).children().first().text() === keyword) {
+                let title = $(this).children().first().text().replace(/["\n"]/g, "").trim().toLowerCase();
+                
+                if (title === keyword) {
                     res = {
-                        name: $(this).children().first().text().replace(/["\n"]/g, "").trim(),
+                        name: title,
                         link: `${ROOT_URL}${$(this).attr('href').replace('/first', '')}`
                     }
-
                     return false;
                 }
             });
