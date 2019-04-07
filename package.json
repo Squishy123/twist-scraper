@@ -17,6 +17,7 @@
     "mocha": "^6.0.2"
   },
   "scripts": {
-    "build-docs": "documentation build src/**/* --format html --output docs/"
+    "build-docs": "documentation build src/**/* --format html --output docs/",
+    "test-all": "mocha --recursive tests --timeout 10000"
   }
 }
