@@ -7,6 +7,15 @@ const SEARCH_REQ_PREFIX = `https://twist.moe`;
 
 module.exports = {
     /**
+     * Packages return values into an object
+     * @param {(String | Error)} status 
+     * @param {*} value 
+     * @param {Array(*)} extra
+     */
+    ScraperData: function (status, value, extra) {
+        return { status: status, value: value, ...extra };
+    },
+    /**
     * Returns all available title links
     * @param {AxiosConfig} opts
     */
@@ -15,6 +24,7 @@ module.exports = {
             let req = await axios.get(`${SEARCH_REQ_PREFIX}`, opts);
             let $ = cheerio.load(req.data);
             let res = [];
+            let status = 'Scraper Success!';
 
             $('a[class=series-title]').each(function (i, elem) {
                 res.push({
@@ -22,7 +32,11 @@ module.exports = {
                     link: `${ROOT_URL}${$(this).attr('href').replace('/first', '')}`
                 });
             });
-            return res;
+
+            if (!res.length)
+                status = new Error('Scraper Unsuccessful!');
+
+            return this.ScraperData(status, res);
         } catch (err) {
             return err;
         }
@@ -33,15 +47,16 @@ module.exports = {
      * @param keyword
      */
     getSearch: async function (keyword, opts) {
-        keyword=keyword.toLowerCase();
+        keyword = keyword.toLowerCase();
         try {
             let req = await axios.get(`${SEARCH_REQ_PREFIX}`, opts);
             let $ = cheerio.load(req.data);
             let res;
+            let status = "Scraper Success!";
 
             $('a[class=series-title]').each(function (i, elem) {
                 let title = $(this).children().first().text().replace(/["\n"]/g, "").trim().toLowerCase();
-                
+
                 if (title === keyword) {
                     res = {
                         name: title,
@@ -50,7 +65,24 @@ module.exports = {
                     return false;
                 }
             });
-            return res;
+
+            if (!res)
+                status = new Error('Scraper Unsuccessful!');
+
+            return this.ScraperData(status, res);
+        } catch (err) {
+            return err;
+        }
+    },
+    /**
+     * Returns all the episode links of the given keyword,
+     */
+    getEpisodes: async function (keyword) {
+        try {
+            let title = await getSearch(keyword);
+            if (title) {
+                return new Error("No title found!");
+            }
         } catch (err) {
             return err;
         }
